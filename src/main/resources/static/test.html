@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+
+    <script src="js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/bootstrap.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jsrsasign-all-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/pb.js" type="text/javascript" charset="utf-8"></script>
+    <title>Title</title>
+
+    <style>
+        body {
+            margin: 50px;
+        }
+
+    </style>
+</head>
+<div class="input-group row" style="text-align: center ;margin-left: 200px">
+
+
+    <input type="text" class="form-control" id="content" style="width: 700px ">
+</div>
+<div style="margin-left: 330px;margin-top: 20px">
+    <input class="btn btn-default" type="button" value="添加" onclick="add()">
+    <input class="btn btn-default" type="button" value="添加记录"
+           onclick="addNote()">
+    <input class="btn btn-default" type="button" value="校验数据"
+    onclick="check()">
+</div>
+<br>
+<div class="alert alert-info" id="response" role="alert">...</div>
+<table class="table">
+    <th>
+    <td>Id</td>
+    <td>内容</td>
+    <td>Nonce</td>
+    <td>Hash</td>
+    <td>PreHash</td>
+
+    </th>
+    <tbody id="tbody">
+
+    </tbody>
+    <tr>
+
+    </tr>
+</table>
+<script src="js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="js/pb.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/jsrsasign-all-min.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    function check() {
+     $get("/check",function (data) {
+         $("#response").html(data)
+     })
+    }
+
+    function add() {
+        alert("添加");
+        var content = $("#content").val();
+        $.post("addNote", "content=" +content, function (data) {
+            alert("post");
+            loading.baosight.showPageLoadingMsg(false) // 显示进度条
+            // 展示操作结果
+            $("#response").html(data)
+
+            $("#content").val("");
+            loading.baosight.hidePageLoadingMsg() // 隐藏进度条
+        });
+        showBlocks();
+    }
+
+    function showBlocks() {
+        alert("显示");
+        $.get("showlist", function (data) {
+            alert("get");
+            loading.baosight.showPageLoadingMsg(false) // 显示进度条
+            // 发起请求
+            // 清空数据
+            $("#tbody").html("")
+            for (var i = 0; i < data.length; i++) {
+                var block = data[i];
+                var id = block.id;
+                var nonce = block.nonce;
+                var hash = block.hash;
+                var preHash = block.preHash;
+                var content = block.content;
+                $("#tbody").append("<tr><th >" + id + "</th><td>" + content + "</td><td>" + nonce + "</td><td>" + hash + "</td><td>" + preHash + "</td></tr>");
+            }
+        });
+        loading.baosight.hidePageLoadingMsg() // 隐藏进度条
+    }
+    
+    $(function () {
+
+        showBlocks();
+    })
+
+</script>
+</body>
+</html>
